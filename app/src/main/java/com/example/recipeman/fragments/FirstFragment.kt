@@ -132,7 +132,7 @@ class FirstFragment : Fragment() {
                 .split("#recipe_")
                 .last()
             val label = recipeJSONObject.getString("label")
-            val image = recipeJSONObject.getString("image")
+            val image = recipeJSONObject.getJSONObject("images").getJSONObject("REGULAR").getString("url")
             val sourceURL = recipeJSONObject.getString("source")
             val ingredientLines =
                 recipeJSONObject.getJSONArray("ingredientLines").toArrayList()
