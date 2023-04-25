@@ -1,9 +1,7 @@
 package com.example.recipeman.fragments
 
 import android.annotation.SuppressLint
-import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
@@ -34,8 +32,6 @@ class FirstFragment : Fragment() {
         recipeList = arrayListOf<RecipeModel>()
         temporaryRecipeList = arrayListOf<RecipeModel>()
 
-        //searchView = findViewById()
-
         // TODO: redo the thing with network calls on main thread
         getRecipes("")
 
@@ -48,10 +44,6 @@ class FirstFragment : Fragment() {
     ): View {
 
         binding = FragmentFirstBinding.inflate(inflater, container, false)
-//        binding.btnBreakfast.tvText.typeface = Typeface.DEFAULT_BOLD
-//        binding.btnLunch.tvText.typeface = Typeface.DEFAULT_BOLD
-//        binding.btnDinner.tvText.typeface = Typeface.DEFAULT_BOLD
-//        binding.btnDesert.tvText.typeface = Typeface.DEFAULT_BOLD
         searchView = binding.searchView
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -89,8 +81,6 @@ class FirstFragment : Fragment() {
         binding.recyclerView.adapter = adapter
     }
 
-    // TODO: redo this
-    // On click on item, open new fragment
     private fun onRecipeClicked(recipeModel: RecipeModel) {
         val bundle = Bundle()
         bundle.putString("RECIPE_IMAGE", recipeModel.image)
