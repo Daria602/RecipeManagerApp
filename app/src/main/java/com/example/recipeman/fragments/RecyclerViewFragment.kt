@@ -7,7 +7,7 @@ import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import com.example.recipeman.R
 import com.example.recipeman.adapters.CustomAdapter
-import com.example.recipeman.databinding.FragmentFirstBinding
+import com.example.recipeman.databinding.FragmentRecyclerviewBinding
 import com.example.recipeman.models.RecipeModel
 import com.example.recipeman.utils.APP_ID
 import com.example.recipeman.utils.APP_KEY
@@ -19,9 +19,9 @@ import org.json.JSONObject
 import org.json.JSONTokener
 import java.util.*
 
-class FirstFragment : Fragment() {
+class RecyclerViewFragment : Fragment() {
 
-    private lateinit var binding: FragmentFirstBinding
+    private lateinit var binding: FragmentRecyclerviewBinding
     private lateinit var recipeList: ArrayList<RecipeModel>
     private lateinit var temporaryRecipeList: ArrayList<RecipeModel>
     private lateinit var searchView: SearchView
@@ -43,7 +43,7 @@ class FirstFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
-        binding = FragmentFirstBinding.inflate(inflater, container, false)
+        binding = FragmentRecyclerviewBinding.inflate(inflater, container, false)
         searchView = binding.searchView
 
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -89,7 +89,7 @@ class FirstFragment : Fragment() {
         bundle.putStringArrayList("RECIPE_INGREDIENTS", recipeModel.ingredientLines)
         bundle.putParcelable("RECIPE", recipeModel)
 
-        val fragment = SecondFragment()
+        val fragment = ViewItemFragment()
         fragment.arguments = bundle
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, fragment)

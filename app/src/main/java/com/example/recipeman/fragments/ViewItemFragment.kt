@@ -4,18 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.recipeman.R
-import com.example.recipeman.models.RecipeModel
-import com.example.recipeman.databinding.FragmentSecondBinding
+import com.example.recipeman.databinding.FragmentViewItemBinding
 import com.squareup.picasso.Picasso
 
-class SecondFragment : Fragment() {
-    private lateinit var binding: FragmentSecondBinding
+class ViewItemFragment : Fragment() {
+    private lateinit var binding: FragmentViewItemBinding
     private lateinit var linearLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,7 +25,7 @@ class SecondFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentSecondBinding.inflate(inflater, container, false)
+        binding = FragmentViewItemBinding.inflate(inflater, container, false)
         linearLayout = binding.ingredientListContainer
         return binding.root
     }
@@ -47,9 +44,11 @@ class SecondFragment : Fragment() {
             }
             Picasso.get()
                 .load(bundle.getString("RECIPE_IMAGE"))
+                .resize(300,300)
+                .centerCrop()
                 .into(binding.recipePicture)
             binding.recipeLabel.text = bundle.getString("RECIPE_NAME")
-            binding.recipeCalories.text = bundle.getString("RECIPE_CALORIES")
+            binding.recipeCalories.text = "Calories: " + bundle.getString("RECIPE_CALORIES") + " kcal"
 //            binding.button.setOnClickListener{
 //
 //            }

@@ -3,7 +3,7 @@ package com.example.recipeman.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.StrictMode
-import com.example.recipeman.fragments.FirstFragment
+import com.example.recipeman.fragments.RecyclerViewFragment
 import com.example.recipeman.R
 
 class MainActivity : AppCompatActivity() {
@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .setReorderingAllowed(true)
-                .add(R.id.fragment_container, FirstFragment::class.java, null)
+                .add(R.id.fragment_container, RecyclerViewFragment::class.java, null)
                 .commit()
         }
     }
