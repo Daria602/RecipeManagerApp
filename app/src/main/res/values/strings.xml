@@ -6,4 +6,14 @@
     <string name="image_description">Picture of recipe</string>
     <string name="add_button_description">Add recipe</string>
     <string name="search_default_hint">Search here…</string>
+
+    <string name="greeting_text">Welcome back!</string>
+    <string name="login_choice_text">Continue with Google or enter your details</string>
+    <string name="login_google_btn">Log in with Google</string>
+    <string name="divider_text">or</string>
+    <string name="email_text">Email</string>
+    <string name="password_text">Password</string>
+    <string name="login_text">Log in</string>
+    <string name="no_acc_text">Don\'t have an account yet?</string>
+    <string name="sign_up_text"><u>Sign in</u></string>
 </resources>
