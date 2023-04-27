@@ -6,8 +6,4 @@
     <string name="image_description">Picture of recipe</string>
     <string name="add_button_description">Add recipe</string>
     <string name="search_default_hint">Search here…</string>
-    <string name="button_breakfast">Breakfast</string>
-    <string name="button_lunch">Lunch</string>
-    <string name="button_dinner">Dinner</string>
-    <string name="button_desert">Desert</string>
 </resources>
