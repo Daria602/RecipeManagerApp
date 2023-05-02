@@ -71,6 +71,7 @@
         app:hintTextColor="@color/purple_200"
         >
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/loginEmail"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/email_text"
@@ -86,6 +87,7 @@
         app:passwordToggleEnabled="true"
         >
         <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/loginPassword"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="@string/password_text"

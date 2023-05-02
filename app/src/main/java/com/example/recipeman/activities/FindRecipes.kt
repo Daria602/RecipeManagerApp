@@ -6,10 +6,10 @@ import android.os.StrictMode
 import com.example.recipeman.fragments.RecyclerViewFragment
 import com.example.recipeman.R
 
-class MainActivity : AppCompatActivity() {
+class FindRecipes : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_find_recipes)
         StrictMode
             .setThreadPolicy(StrictMode.ThreadPolicy.Builder().detectAll().penaltyLog().build())
         if (savedInstanceState == null) {

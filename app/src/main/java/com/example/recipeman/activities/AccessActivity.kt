@@ -27,6 +27,19 @@ class AccessActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
+        if (auth.currentUser != null) {
+            // TODO: change the activity that goes after login/sign up
+            val intent = Intent(this, Dashboard::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+            startActivity(intent)
+        }
+
+        binding.tvSignUp.setOnClickListener {
+            val intent = Intent(this, Signup::class.java)
+            startActivity(intent)
+        }
+
+
         val googleSignInOptions = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
@@ -36,11 +49,35 @@ class AccessActivity : AppCompatActivity() {
         binding.gSignInButton.setOnClickListener {
             signInWithGoogle()
         }
+        binding.logInButton.setOnClickListener {
+            signIn()
+        }
+
+
+
+    }
+
+    private fun signIn() {
+        val email = binding.loginEmail.text.toString()
+        val password = binding.loginPassword.text.toString()
+
+        if (email.isNotEmpty() && password.isNotEmpty()) {
+            auth.signInWithEmailAndPassword(email, password).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    val intent = Intent(this, Dashboard::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                } else {
+                    Toast.makeText( this, it.exception.toString(), Toast.LENGTH_SHORT).show()
+                }
+            }
+        } else {
+            Toast.makeText( this, "Empty fields are not allowed", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun signInWithGoogle() {
         val signInIntent = googleSignInClient.signInIntent
-        // val signUpIntent
         launcher.launch(signInIntent)
     }
 
@@ -67,7 +104,8 @@ class AccessActivity : AppCompatActivity() {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth.signInWithCredential(credential).addOnCompleteListener {
             if (it.isSuccessful) {
-                val intent : Intent = Intent(this, MainActivity::class.java)
+                val intent = Intent(this, Dashboard::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
             } else {
                 Toast.makeText(this, it.exception.toString(), Toast.LENGTH_SHORT).show()

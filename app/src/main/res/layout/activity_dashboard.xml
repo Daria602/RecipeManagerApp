@@ -3,16 +3,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".activities.Dashboard">
 
-    <SearchView
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/searchRecipes"
         android:layout_width="match_parent"
-        android:layout_height="34dp"
-        android:layout_margin="20dp"
-        android:background="@drawable/recycler_view_border"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:iconifiedByDefault="false"
-        android:queryHint="@string/search_default_hint"/>
+        android:layout_height="wrap_content"
+        android:text="Search for recipes"
+        app:layout_constraintBottom_toTopOf="@+id/signOutButton" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/signOutButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Sign out"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
