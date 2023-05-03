@@ -6,16 +6,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.example.recipeman.R
-import com.example.recipeman.models.RecipeModel
+import com.example.recipeman.retrofit.RecipeHit
 import com.squareup.picasso.Picasso
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 class CustomAdapter(
-    private val recipeList: ArrayList<RecipeModel>,
-    private val onItemClicked: (RecipeModel) -> Unit
+    private val recipeList: ArrayList<RecipeHit>,
+    private val onItemClicked: (RecipeHit) -> Unit
 ): RecyclerView.Adapter<CustomAdapter.RecipeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
@@ -30,9 +29,9 @@ class CustomAdapter(
     override fun onBindViewHolder(holder: RecipeViewHolder, position: Int) {
         val currentRecipe = recipeList[position]
         Picasso.get()
-            .load(currentRecipe.image)
+            .load(currentRecipe.recipe?.images?.REGULAR?.url)
             .into(holder.imageView)
-        holder.nameTextView.text = currentRecipe.label
+        holder.nameTextView.text = currentRecipe.recipe?.label
         holder.layout.setOnClickListener {
             onItemClicked(currentRecipe)
         }
@@ -41,13 +40,20 @@ class CustomAdapter(
     class RecipeViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var imageView: ImageView
         var nameTextView: TextView
+        var likeButton: LottieAnimationView
         var layout: ConstraintLayout
 
         init {
             imageView = view.findViewById(R.id.recipe_image_view)
             nameTextView = view.findViewById(R.id.name_text_view)
             layout = view.findViewById(R.id.container)
+            likeButton = view.findViewById(R.id.animationView)
+
+            likeButton.setOnClickListener {
+                likeButton.playAnimation()
+            }
 
         }
+
     }
 }

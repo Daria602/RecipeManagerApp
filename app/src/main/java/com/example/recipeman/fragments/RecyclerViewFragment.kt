@@ -8,35 +8,26 @@ import androidx.fragment.app.Fragment
 import com.example.recipeman.R
 import com.example.recipeman.adapters.CustomAdapter
 import com.example.recipeman.databinding.FragmentRecyclerviewBinding
-import com.example.recipeman.models.RecipeModel
+import com.example.recipeman.retrofit.RecipeHit
+import com.example.recipeman.retrofit.RecipesResult
+import com.example.recipeman.retrofit.RecipesService
 import com.example.recipeman.utils.APP_ID
 import com.example.recipeman.utils.APP_KEY
 import com.example.recipeman.utils.BASE_URL
-import okhttp3.*
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import org.json.JSONArray
-import org.json.JSONObject
-import org.json.JSONTokener
-import java.util.*
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Callback
+import retrofit2.Retrofit
+
 
 class RecyclerViewFragment : Fragment() {
 
     private lateinit var binding: FragmentRecyclerviewBinding
-    private lateinit var recipeList: ArrayList<RecipeModel>
-    private lateinit var temporaryRecipeList: ArrayList<RecipeModel>
+    private lateinit var recipeList: ArrayList<RecipeHit>
     private lateinit var searchView: SearchView
-    private val client = OkHttpClient()
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        recipeList = arrayListOf<RecipeModel>()
-        temporaryRecipeList = arrayListOf<RecipeModel>()
-
-        // TODO: redo the thing with network calls on main thread
-        getRecipes("")
-
-    }
-
+    private lateinit var recipeResult : RecipesResult
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -44,21 +35,17 @@ class RecyclerViewFragment : Fragment() {
     ): View {
 
         binding = FragmentRecyclerviewBinding.inflate(inflater, container, false)
-        searchView = binding.searchView
 
+        searchView = binding.searchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+
             @SuppressLint("NotifyDataSetChanged")
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null && query.isNotEmpty()) {
 
-                    recipeList.clear()
-                    temporaryRecipeList.clear()
-                    getRecipes(query)
-                    binding.recyclerView.adapter?.notifyDataSetChanged()
+                    fetchRecipes(query)
                 }
                 searchView.clearFocus()
-
-
                 return false
             }
 
@@ -74,21 +61,22 @@ class RecyclerViewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val adapter = CustomAdapter(temporaryRecipeList) { recipeModel ->
+        recipeList = arrayListOf()
+        val adapter = CustomAdapter(recipeList) { recipeModel ->
             onRecipeClicked(recipeModel)
         }
 
         binding.recyclerView.adapter = adapter
+
+        fetchRecipes("food vegetables meat")
     }
 
-    private fun onRecipeClicked(recipeModel: RecipeModel) {
+    private fun onRecipeClicked(recipeHit: RecipeHit) {
         val bundle = Bundle()
-        bundle.putString("RECIPE_IMAGE", recipeModel.image)
-        bundle.putString("RECIPE_NAME", recipeModel.label)
-        bundle.putString("RECIPE_CALORIES", recipeModel.calories)
-        bundle.putStringArrayList("RECIPE_INGREDIENTS", recipeModel.ingredientLines)
-        bundle.putParcelable("RECIPE", recipeModel)
-
+        bundle.putString("RECIPE_IMAGE", recipeHit.recipe?.images?.REGULAR?.url)
+        bundle.putString("RECIPE_NAME", recipeHit.recipe?.label)
+        bundle.putString("RECIPE_CALORIES", recipeHit.recipe?.calories.toString())
+        bundle.putParcelableArrayList("RECIPE_INGREDIENTS", recipeHit.recipe?.ingredients)
         val fragment = ViewItemFragment()
         fragment.arguments = bundle
         requireActivity().supportFragmentManager.beginTransaction()
@@ -97,81 +85,50 @@ class RecyclerViewFragment : Fragment() {
             .commit()
     }
 
-    private fun getRecipes(query: String) {
-        val urlBuilder: HttpUrl.Builder = BASE_URL.toHttpUrlOrNull()!!.newBuilder()
-
-        // If the user didn't search for anything, make it a random word,
-        // otherwise keep the search
-        val newQuery: String = query.ifEmpty {
-            getRandomQuery()
+    @OptIn(ExperimentalSerializationApi::class)
+    private fun fetchRecipes(q: String) {
+        binding.recyclerView.visibility = View.GONE
+        binding.progressBar.visibility = View.VISIBLE
+        val json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
         }
 
-        urlBuilder.addQueryParameter("type", "public")
-        urlBuilder.addQueryParameter("q", newQuery)
-        urlBuilder.addQueryParameter("app_id", APP_ID)
-        urlBuilder.addQueryParameter("app_key", APP_KEY)
-
-        val urlWithParams: String = urlBuilder.build().toString()
-
-        val request = Request.Builder()
-            .url(urlWithParams)
+        val contentType = "application/json".toMediaType()
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(json.asConverterFactory(contentType))
             .build()
-        val call: Call = client.newCall(request)
-        val response = call.execute()
 
-        putRecipesIntoList(response)
-    }
+        val recipesService = retrofit.create(RecipesService::class.java)
+        recipeResult = RecipesResult()
+        recipesService.allRecipes("public", APP_ID, APP_KEY, q)
+            .enqueue(
+                object: Callback<RecipesResult> {
+                    @SuppressLint("NotifyDataSetChanged")
+                    override fun onResponse(
+                        call: retrofit2.Call<RecipesResult>,
+                        response: retrofit2.Response<RecipesResult>
+                    ) {
 
-    private fun putRecipesIntoList(response: Response) {
-        val jsonObject = JSONTokener(response.body!!.string()).nextValue() as JSONObject
-        val hits = jsonObject.getJSONArray("hits")
+                        if (response.isSuccessful) {
+                            recipeResult = response.body()!!
+                            recipeList.clear()
+                            recipeList.addAll(recipeResult.hits!!)
+                            binding.recyclerView.adapter?.notifyDataSetChanged()
 
-        for (i in 0 until hits.length()) {
-            val recipeJSONObject = hits.getJSONObject(i).getJSONObject("recipe")
-            val recipeId = recipeJSONObject.getString("uri")
-                .split("#recipe_")
-                .last()
-            val label = recipeJSONObject.getString("label")
-            val image = recipeJSONObject.getJSONObject("images").getJSONObject("REGULAR").getString("url")
-            val sourceURL = recipeJSONObject.getString("source")
-            val ingredientLines =
-                recipeJSONObject.getJSONArray("ingredientLines").toArrayList()
-            val calories = recipeJSONObject.getDouble("calories").toInt().toString()
-            val mealTypes = recipeJSONObject.getJSONArray("mealType").toArrayList()
 
-            recipeList.add(
-                RecipeModel(
-                    recipeId = recipeId,
-                    label = label,
-                    image = image,
-                    sourceURL = sourceURL,
-                    ingredientLines = ingredientLines,
-                    calories = calories,
-                    mealTypes = mealTypes
-                )
+                        }
+                        binding.progressBar.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
+                    }
+
+                    override fun onFailure(call: retrofit2.Call<RecipesResult>, t: Throwable) {
+                        binding.progressBar.visibility = View.GONE
+                        binding.recyclerView.visibility = View.VISIBLE
+                    }
+
+                }
             )
-
-        }
-        temporaryRecipeList.addAll(recipeList)
-    }
-
-    /**
-     *  If the user didn't search for anything, random word will be returned
-     */
-    private fun getRandomQuery(): String {
-        val arrayOfRandomFoods: ArrayList<String> =
-            arrayListOf("something", "tasty", "delicious", "recipe")
-        return arrayOfRandomFoods.random()
-    }
-
-    /**
-     * Convert JSONArray (of Strings) to ArrayList<String>
-     */
-    private fun JSONArray.toArrayList(): ArrayList<String> {
-        val list = arrayListOf<String>()
-        for (i in 0 until this.length()) {
-            list.add(this.getString(i))
-        }
-        return list
     }
 }
