@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.gms.google-services'
+    id 'kotlinx-serialization'
 }
 
 apply plugin: 'kotlin-parcelize'
@@ -67,10 +68,14 @@ dependencies {
     // retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
 
-    // GSON
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-
     // coroutine
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4'
+
+    // kotlin serialization
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.2.2"
+    implementation "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0"
+
+    //Lottie Animations
+    implementation "com.airbnb.android:lottie:6.0.0"
 }
