@@ -51,13 +51,11 @@
         android:id="@+id/animationView"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:paddingTop="10dp"
-        app:lottie_rawRes="@raw/heart_anim"
         android:scaleX="2"
-        android:scaleY="2"/>
-
-
+        android:scaleY="2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/cardView"
+        app:lottie_rawRes="@raw/heart_anim" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

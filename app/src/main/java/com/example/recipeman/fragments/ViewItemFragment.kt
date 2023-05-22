@@ -1,5 +1,6 @@
 package com.example.recipeman.fragments
 
+import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -11,17 +12,21 @@ import android.widget.TableRow
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import com.airbnb.lottie.LottieAnimationView
+import com.example.recipeman.RecipeDBModel
 import com.example.recipeman.databinding.FragmentViewItemBinding
 import com.example.recipeman.retrofit.Ingredient
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.squareup.picasso.Picasso
 class ViewItemFragment : Fragment() {
     private lateinit var binding: FragmentViewItemBinding
     private lateinit var tableLayout: TableLayout
+    private lateinit var likeButton: LottieAnimationView
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
+    private lateinit var dbRef: DatabaseReference
+    private lateinit var firebaseAuth: FirebaseAuth
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,9 +35,21 @@ class ViewItemFragment : Fragment() {
     ): View {
         binding = FragmentViewItemBinding.inflate(inflater, container, false)
         tableLayout = binding.ingredientTable
+        likeButton = binding.animationView
+
+        firebaseAuth = FirebaseAuth.getInstance()
+        val userIdentifier : String = if (firebaseAuth.currentUser != null) {
+            firebaseAuth.currentUser!!.email!!.split("@")[0]
+        } else {
+            // This should never happen, but just in case
+            "anonymous"
+        }
+        dbRef = FirebaseDatabase.getInstance().getReference(userIdentifier)
+
         return binding.root
     }
 
+    @SuppressLint("SetTextI18n")
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,7 +72,38 @@ class ViewItemFragment : Fragment() {
                     tableLayout.addView(createIngredientRow(ingredient))
                 }
             }
+
+            likeButton.setOnClickListener {
+                addRecipeToLiked(
+                    bundle.getString("RECIPE_URI"),
+                    bundle.getString("RECIPE_NAME"),
+                    bundle.getString("RECIPE_IMAGE"),
+                    bundle.getParcelableArrayList("RECIPE_INGREDIENTS", Ingredient::class.java)
+                )
+            }
+
         }
+    }
+
+    private fun addRecipeToLiked(uri: String?, label: String?, image: String?, ingredientlist: ArrayList<Ingredient>?) {
+        if (uri == null || label == null || image == null) {
+            return
+        }
+        val recipeIdAPI = uri.split("#recipe_").last()
+
+        val recipeId = dbRef.push().key!!
+
+        val recipe = RecipeDBModel(recipeId, recipeIdAPI, label, image, ingredientlist)
+
+        dbRef.child(recipeId).setValue(recipe)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    Log.d("Test", "inserted succ")
+                } else {
+                    Log.d("Test", it.exception.toString())
+                }
+            }
+
     }
 
     private fun createIngredientRow(ingredient: Ingredient) : TableRow {
@@ -92,6 +140,6 @@ class ViewItemFragment : Fragment() {
         ingredientTableRow.addView(tvIngredientQuantity)
         ingredientTableRow.addView(tvIngredientMeasure)
 
-        return  ingredientTableRow
+        return ingredientTableRow
     }
 }

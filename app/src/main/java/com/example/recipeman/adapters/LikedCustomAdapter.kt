@@ -14,10 +14,10 @@ import com.example.recipeman.R
 import com.example.recipeman.retrofit.RecipeHit
 import com.squareup.picasso.Picasso
 
-class CustomAdapter(
+class LikedCustomAdapter(
     private val recipeList: ArrayList<RecipeHit>,
     private val onItemClicked: (RecipeHit) -> Unit
-): RecyclerView.Adapter<CustomAdapter.RecipeViewHolder>() {
+): RecyclerView.Adapter<LikedCustomAdapter.RecipeViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecipeViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_recyclerview, parent, false)
@@ -53,6 +53,8 @@ class CustomAdapter(
                 dbHelper.addRecipe(currentRecipe.recipe)
                 holder.likeButton.playAnimation()
             } else {
+                recipeList.removeAt(position)
+                this.notifyDataSetChanged()
                 dbHelper.removeRecipe(currentRecipe.recipe)
                 holder.likeButton.progress = 0f
             }

@@ -2,9 +2,12 @@ package com.example.recipeman.fragments
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.widget.SearchView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.recipeman.DBHelper
 import com.example.recipeman.R
 import com.example.recipeman.adapters.CustomAdapter
 import com.example.recipeman.databinding.FragmentRecyclerviewBinding
@@ -14,6 +17,9 @@ import com.example.recipeman.retrofit.RecipesService
 import com.example.recipeman.utils.APP_ID
 import com.example.recipeman.utils.APP_KEY
 import com.example.recipeman.utils.BASE_URL
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -73,6 +79,7 @@ class RecyclerViewFragment : Fragment() {
 
     private fun onRecipeClicked(recipeHit: RecipeHit) {
         val bundle = Bundle()
+        bundle.putString("RECIPE_URI", recipeHit.recipe?.uri)
         bundle.putString("RECIPE_IMAGE", recipeHit.recipe?.images?.REGULAR?.url)
         bundle.putString("RECIPE_NAME", recipeHit.recipe?.label)
         bundle.putString("RECIPE_CALORIES", recipeHit.recipe?.calories.toString())
@@ -114,13 +121,33 @@ class RecyclerViewFragment : Fragment() {
                         if (response.isSuccessful) {
                             recipeResult = response.body()!!
                             recipeList.clear()
+                            val dbHelper = DBHelper()
                             recipeList.addAll(recipeResult.hits!!)
                             binding.recyclerView.adapter?.notifyDataSetChanged()
+                            for ((index, recipe) in recipeList.withIndex()) {
+                                val recipeId = dbHelper.getRecipeIdFromURI(recipe.recipe!!)
+                                dbHelper.dbRef.child(recipeId).addListenerForSingleValueEvent(object :
+                                    ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        if (snapshot.exists()) {
+                                            recipe.recipe.liked = true
+                                            binding.recyclerView.adapter?.notifyItemChanged(index)
+                                        }
+                                        if (index == recipeList.lastIndex) {
+                                            binding.progressBar.visibility = View.GONE
+                                            binding.recyclerView.visibility = View.VISIBLE
+                                        }
+                                    }
 
+                                    override fun onCancelled(error: DatabaseError) {
+                                        Toast.makeText(context, error.toString(), Toast.LENGTH_SHORT).show()
+                                    }
+
+                                })
+                            }
 
                         }
-                        binding.progressBar.visibility = View.GONE
-                        binding.recyclerView.visibility = View.VISIBLE
+
                     }
 
                     override fun onFailure(call: retrofit2.Call<RecipesResult>, t: Throwable) {
@@ -131,4 +158,5 @@ class RecyclerViewFragment : Fragment() {
                 }
             )
     }
+
 }

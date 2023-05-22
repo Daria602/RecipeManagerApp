@@ -3,7 +3,6 @@ package com.example.recipeman.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.recipeman.R
 import com.example.recipeman.databinding.ActivityDashboardBinding
 import com.google.firebase.auth.FirebaseAuth
 
@@ -23,6 +22,9 @@ class Dashboard : AppCompatActivity() {
 
         binding.searchRecipes.setOnClickListener {
             startActivity(Intent(this, FindRecipes::class.java))
+        }
+        binding.seeLiked.setOnClickListener {
+            startActivity(Intent(this, SeeLiked::class.java))
         }
 
     }

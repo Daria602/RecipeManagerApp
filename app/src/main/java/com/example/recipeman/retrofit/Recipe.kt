@@ -4,8 +4,9 @@ package com.example.recipeman.retrofit
 class Recipe(
     val uri: String? = null,
     val label: String? = null,
-    val images: ImageTypes? = null,
+    var images: ImageTypes? = null,
     val source: String? = null,
     val ingredients: ArrayList<Ingredient>? = null,
-    val calories: Double? = null
+    val calories: Double? = null,
+    var liked: Boolean? = false
 )

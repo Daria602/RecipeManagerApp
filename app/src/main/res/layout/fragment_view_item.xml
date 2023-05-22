@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,23 +28,37 @@
             android:background="@drawable/image_border">
         <ImageView
             android:id="@+id/recipe_picture"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
             android:src="@drawable/carbonara_pic"
             android:layout_gravity="center"
+            android:scaleType="centerCrop"
             android:contentDescription="@string/image_description"
             />
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/animationView"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:paddingTop="10dp"
+                app:lottie_rawRes="@raw/heart_anim"
+                android:scaleX="2"
+                android:scaleY="2"
+                android:layout_gravity="bottom|end" />
+            <TextView
+                android:id="@+id/recipe_calories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Calories"
+                android:textSize="18sp"
+                android:layout_gravity="bottom|start"
+                android:layout_marginStart="15dp"
+                />
         </androidx.cardview.widget.CardView>
 
 
 
-        <TextView
-            android:id="@+id/recipe_calories"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="Calories"
-            android:textSize="18sp" />
+
         <TableLayout
             android:id="@+id/ingredient_table"
             android:layout_width="match_parent"

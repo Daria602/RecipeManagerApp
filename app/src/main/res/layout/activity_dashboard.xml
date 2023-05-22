@@ -11,6 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Search for recipes"
+        app:layout_constraintBottom_toTopOf="@+id/seeLiked" />
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/seeLiked"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="See liked"
         app:layout_constraintBottom_toTopOf="@+id/signOutButton" />
 
     <com.google.android.material.button.MaterialButton

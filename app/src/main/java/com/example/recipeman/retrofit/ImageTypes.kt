@@ -1,10 +1,12 @@
 package com.example.recipeman.retrofit
 
+import com.google.firebase.database.Exclude
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.JsonNames
+
 
 @kotlinx.serialization.Serializable
-class ImageTypes(
-    val THUMBNAIL: Image? = null,
-    val SMALL: Image? = null,
-    val REGULAR: Image? = null,
-    val LARGE: Image? = null
+class ImageTypes @OptIn(ExperimentalSerializationApi::class) constructor(
+    @JsonNames("regular", "REGULAR")
+    var REGULAR: Image? = null
 )
