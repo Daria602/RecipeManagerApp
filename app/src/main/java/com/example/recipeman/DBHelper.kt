@@ -3,7 +3,8 @@ package com.example.recipeman
 import android.util.Log
 import com.example.recipeman.retrofit.Recipe
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 class DBHelper {
     private val firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()

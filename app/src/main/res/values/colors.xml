@@ -15,4 +15,6 @@
     <color name="text_button_on">#437F6E</color>
     <color name="background_button_off">#F3F3F3</color>
     <color name="text_button_off">#969696</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="primary_theme">#C33F59</color>
 </resources>

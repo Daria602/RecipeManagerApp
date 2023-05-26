@@ -5,10 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
 import com.example.recipeman.DBHelper
 import com.example.recipeman.R
 import com.example.recipeman.adapters.LikedCustomAdapter
@@ -18,19 +15,16 @@ import com.example.recipeman.retrofit.RecipeHit
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
-import kotlin.properties.Delegates
 
 class LikedRecipesRVFragment: Fragment() {
     private lateinit var binding: FragmentLikedRecyclerviewBinding
     private lateinit var likedRecipes: ArrayList<RecipeHit>
-    private var noRecipesYet: Boolean = false
-    private var loaded: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentLikedRecyclerviewBinding.inflate(inflater, container, false)
 
         return binding.root
@@ -87,6 +81,7 @@ class LikedRecipesRVFragment: Fragment() {
     private fun onRecipeClicked(recipeHit: RecipeHit) {
         val bundle = Bundle()
         bundle.putString("RECIPE_URI", recipeHit.recipe?.uri)
+        bundle.putString("RECIPE_URL", recipeHit.recipe?.url)
         bundle.putString("RECIPE_IMAGE", recipeHit.recipe?.images?.REGULAR?.url)
         bundle.putString("RECIPE_NAME", recipeHit.recipe?.label)
         bundle.putString("RECIPE_CALORIES", recipeHit.recipe?.calories.toString())
@@ -94,7 +89,7 @@ class LikedRecipesRVFragment: Fragment() {
         val fragment = ViewItemFragment()
         fragment.arguments = bundle
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container_liked, fragment)
+            .replace(R.id.fragmentsContainer, fragment)
             .addToBackStack(null)
             .commit()
     }

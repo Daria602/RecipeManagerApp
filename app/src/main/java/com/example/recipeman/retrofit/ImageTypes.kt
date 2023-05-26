@@ -1,6 +1,5 @@
 package com.example.recipeman.retrofit
 
-import com.google.firebase.database.Exclude
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.JsonNames
 
