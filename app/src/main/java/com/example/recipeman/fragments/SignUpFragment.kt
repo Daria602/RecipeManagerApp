@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import com.example.recipeman.activities.MainActivity
 import com.example.recipeman.databinding.FragmentSignupBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 
 class SignUpFragment: Fragment() {
     private lateinit var binding: FragmentSignupBinding
@@ -37,8 +38,16 @@ class SignUpFragment: Fragment() {
             Toast.makeText( this.context, "Empty fields are not allowed", Toast.LENGTH_SHORT).show()
             return false
         }
+
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            binding.signUpEmail.error = "Not a valid email format"
+            binding.signUpEmail.requestFocus()
+            return false
+        }
+
         if (password != repeatPassword) {
-            Toast.makeText(this.context, "Passwords don't match", Toast.LENGTH_SHORT).show()
+            binding.signUpRepeatPassword.error = "Passwords don't match"
+            binding.signUpRepeatPassword.requestFocus()
             return false
         }
         return true
@@ -50,7 +59,15 @@ class SignUpFragment: Fragment() {
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
             } else {
-                Toast.makeText(this.context, it.exception.toString(), Toast.LENGTH_SHORT).show()
+                try {
+                    throw it.exception!!
+                } catch (e: FirebaseAuthWeakPasswordException) {
+                    binding.signUpPassword.error = "Password too weak"
+                    binding.signUpPassword.requestFocus()
+                } catch (e: Exception) {
+                    Toast.makeText(this.context, e.toString(), Toast.LENGTH_LONG).show()
+                }
+
             }
         }
     }
