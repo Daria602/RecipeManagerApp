@@ -35,15 +35,54 @@
             android:scaleType="centerCrop"
             android:contentDescription="@string/image_description"
             />
-            <com.airbnb.lottie.LottieAnimationView
-                android:id="@+id/animationView"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:paddingTop="10dp"
-                app:lottie_rawRes="@raw/heart_anim"
-                android:scaleX="2"
-                android:scaleY="2"
-                android:layout_gravity="bottom|end" />
+            <LinearLayout
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                app:cardBackgroundColor="@color/transparent"
+                app:cardElevation="0dp"
+                android:layout_gravity="bottom|end">
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/animationView"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    app:lottie_rawRes="@raw/heart_anim"
+                    android:scaleX="2"
+                    android:scaleY="2"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
+                    android:paddingBottom="0dp"
+                    android:paddingTop="3dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/shareRecipeButton"
+                    style="@style/IconOnlyButton"
+                    app:icon="@drawable/share_icon"
+                    android:layout_gravity="bottom"
+                    app:iconTint="@color/dark_text"
+                    app:iconSize="25dp"
+                    android:paddingTop="10dp"
+                    />
+<!--                <com.google.android.material.button.MaterialButtonToggleGroup-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    app:icon="@drawable/home_icon"-->
+<!--                    />-->
+<!--                <com.google.android.material.button.MaterialButton-->
+<!--                    android:id="@+id/shareRecipeButton"-->
+<!--                    style="@style/Widget.AppCompat.Button.Borderless"-->
+<!--                    android:padding="0dp"-->
+<!--                    app:iconGravity="end"-->
+<!--                    android:layout_width="50dp"-->
+<!--                    android:layout_height="50dp"-->
+<!--                    app:icon="@drawable/home_icon"-->
+<!--                    app:iconSize="40dp"-->
+<!--                    app:iconTint="@color/dark_text"-->
+<!--                    android:layout_gravity="bottom|start"-->
+<!--                    />-->
+
+            </LinearLayout>
+
             <TextView
                 android:id="@+id/recipe_calories"
                 android:layout_width="wrap_content"
