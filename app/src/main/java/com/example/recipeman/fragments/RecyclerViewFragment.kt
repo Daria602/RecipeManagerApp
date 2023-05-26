@@ -1,8 +1,9 @@
 package com.example.recipeman.fragments
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.SearchView
 import android.widget.Toast
@@ -61,8 +62,20 @@ class RecyclerViewFragment : Fragment() {
             }
 
         })
+
+
+        // Animate progress bar
+        val animatorSet = AnimatorSet()
+        val forkAnimator = ObjectAnimator.ofFloat(binding.progressBarFork, "rotation", 0f, -45f, 0f)
+        val knifeAnimator = ObjectAnimator.ofFloat(binding.progressBarKnife, "rotation", 0f, 45f, 0f)
+        animatorSet.playTogether(forkAnimator, knifeAnimator)
+        animatorSet.duration = 3000
+        animatorSet.start()
+
+
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -80,6 +93,7 @@ class RecyclerViewFragment : Fragment() {
     private fun onRecipeClicked(recipeHit: RecipeHit) {
         val bundle = Bundle()
         bundle.putString("RECIPE_URI", recipeHit.recipe?.uri)
+        bundle.putString("RECIPE_URL", recipeHit.recipe?.url)
         bundle.putString("RECIPE_IMAGE", recipeHit.recipe?.images?.REGULAR?.url)
         bundle.putString("RECIPE_NAME", recipeHit.recipe?.label)
         bundle.putString("RECIPE_CALORIES", recipeHit.recipe?.calories.toString())
@@ -87,7 +101,7 @@ class RecyclerViewFragment : Fragment() {
         val fragment = ViewItemFragment()
         fragment.arguments = bundle
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, fragment)
+            .replace(R.id.fragmentsContainer, fragment)
             .addToBackStack(null)
             .commit()
     }

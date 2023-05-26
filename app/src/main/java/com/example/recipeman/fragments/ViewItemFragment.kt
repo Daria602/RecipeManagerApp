@@ -1,6 +1,7 @@
 package com.example.recipeman.fragments
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -64,7 +65,8 @@ class ViewItemFragment : Fragment() {
                 .centerCrop()
                 .into(binding.recipePicture)
             // Add calories
-            binding.recipeCalories.text = "Calories: " + bundle.getString("RECIPE_CALORIES") + " kcal"
+            val calories = bundle.getString("RECIPE_CALORIES")?.toDouble()?.toInt().toString()
+            binding.recipeCalories.text = "Calories: $calories kcal"
             // Add ingredients
             val ingredientListBundle = bundle.getParcelableArrayList("RECIPE_INGREDIENTS", Ingredient::class.java)
             if (ingredientListBundle != null) {
@@ -81,8 +83,20 @@ class ViewItemFragment : Fragment() {
                     bundle.getParcelableArrayList("RECIPE_INGREDIENTS", Ingredient::class.java)
                 )
             }
+            binding.shareRecipeButton.setOnClickListener {
+                shareRecipe(bundle.getString("RECIPE_URL"))
+            }
 
         }
+    }
+
+    private fun shareRecipe(recipeUrl: String?) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "text/plain"
+        intent.putExtra(Intent.EXTRA_TEXT, recipeUrl)
+        intent.putExtra(Intent.EXTRA_TITLE, "Share to:")
+        startActivity(Intent.createChooser(intent, null))
+
     }
 
     private fun addRecipeToLiked(uri: String?, label: String?, image: String?, ingredientlist: ArrayList<Ingredient>?) {
@@ -123,8 +137,6 @@ class ViewItemFragment : Fragment() {
         } else {
             tvIngredientMeasure.text = ingredient.measure
         }
-
-        Log.d("test", ingredient.measure.toString())
 
         tvIngredientName.setPadding(10,10,10,10)
         tvIngredientQuantity.setPadding(10,10,10,10)
